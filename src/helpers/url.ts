@@ -1,4 +1,4 @@
-import { isDate, isObject } from "./util"
+import { isDate, isPlainObject } from "./util"
 
 // 对字符串进行 URL 编码
 function encode(val: string): string {
@@ -41,7 +41,7 @@ export function buildURL(url: string, params?: any): string {
       if (isDate(val)) {
         // 如果值是日期，转换为 ISO 字符串
         val = val.toISOString();
-      } else if (isObject(val)) {
+      } else if (isPlainObject(val)) {
         // 如果值是对象，转换为 JSON 字符串
         val = JSON.stringify(val);
       }
