@@ -28,3 +28,31 @@ export function processHeaders (headers: any, data: any): any {
   }
   return headers
 }
+
+// 解析 HTTP 响应头字符串
+export function parseHeaders(headers: string): any {
+  // 创建一个空对象用于存储解析后的请求头
+  let parsed = Object.create(null)
+  // 如果没有提供头部字符串，返回空对象
+  if (!headers) {
+    return parsed
+  }
+
+  // 将头部字符串按行分割，并遍历每一行
+  headers.split('\r\n').forEach((line) => {
+    // 将每一行按冒号分割为键值对
+    let [key, val] = line.split(':')
+    // 对键进行修剪并转为小写
+    key = key.trim().toLowerCase()
+    // 如果没有键，则跳过该行
+    if (!key) {
+      return 
+    }
+    if(val) {
+      //去除开头和结尾的空白字符
+      val = val.trim()
+    }
+    parsed[key] = val
+  })
+  return parsed
+}
