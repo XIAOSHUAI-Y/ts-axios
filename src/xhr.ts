@@ -3,14 +3,18 @@ import { AxiosPromise, AxiosRequestConfig, AxiosResponse } from "./types";
 
 export default function xhr(config: AxiosRequestConfig): 
   AxiosPromise {
-  return new Promise((resolve) => {
-    const {data = null, url, method = 'get', headers, responseType } = config
+  return new Promise((resolve, reject) => {
+    const {data = null, url, method = 'get', headers, responseType, timeout } = config
 
     const request = new XMLHttpRequest()
 
     // 如果配置中指定了响应类型，则设置 XMLHttpRequest 的响应类型
     if (responseType) {
       request.responseType = responseType
+    }
+
+    if (timeout) {
+      request.timeout = timeout
     }
 
     // 初始化请求，设置请求方法和 URL，第三个参数为 true 表示异步请求
@@ -20,6 +24,8 @@ export default function xhr(config: AxiosRequestConfig):
     request.onreadystatechange = function handleLoad() {
 
       if (request.readyState !== 4) return 
+
+      if (request.status === 0) return 
 
       // 获取所有响应头
       const responseHeaders = parseHeaders(request.getAllResponseHeaders())
@@ -35,7 +41,15 @@ export default function xhr(config: AxiosRequestConfig):
         request
       } 
       // 解析 Promise，并返回响应对象
-      resolve(response)
+      handleResponse(response)
+    }
+
+    request.onerror = function handleError() {
+      reject(new Error('Network Error'))
+    }
+
+    request.ontimeout = function handleTimeout() {
+      reject(new Error(`Timeout of ${timeout} ms exceeded`))
     }
 
     // 遍历请求头对象并设置请求头
@@ -50,5 +64,13 @@ export default function xhr(config: AxiosRequestConfig):
     })
 
     request.send(data)
+
+    function handleResponse(response: AxiosResponse): void {
+      if (response.status >= 200 && response.status < 300) {
+        resolve(response)
+      } else {
+        reject(new Error(`Request failed with status code ${response.status}`))
+      }
+    }
   })
 }
