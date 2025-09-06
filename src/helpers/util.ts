@@ -15,3 +15,17 @@ export function isObject(val: any): val is Object {
 export function isPlainObject(val: any): val is Object {
   return toString.call(val) === '[object Object]'
 }
+
+// extend 函数用于将一个对象的属性合并到另一个对象中，返回合并后的对象。
+// 泛型 T 和 U 表示目标对象和源对象的类型，返回类型是这两者类型的交叉类型（T & U）。
+export function extend<T, U>(to: T, from: U): T & U {
+  // 遍历源对象 from 的所有属性
+  for (const key in from) {
+    // 将源对象 from 中的每个属性赋值给目标对象 to
+    // 使用类型断言将目标对象强制转换为 T & U 以便可以访问所有的属性
+    // 注意：这里的 `key` 是从 `from` 中动态获取的属性名
+    (to as T & U)[key] = from[key] as any
+  }
+  // 返回合并后的目标对象，目标对象的类型为 T & U，即包含了源对象和目标对象的所有属性
+  return to as T & U
+}
