@@ -4,7 +4,15 @@ import dispatchRequest from "./dispatchRequest";
 
 export default class Axios {
   // 发起请求的通用方法
-  request(config: AxiosRequestConfig): AxiosPromise {
+  request(url: any, config?: any): AxiosPromise {
+    if (typeof url === 'string') {
+      if (!config) {
+        config = {}
+      }
+      config.url = url
+    } else {
+      config = url
+    }
     return dispatchRequest(config)
   }
 
