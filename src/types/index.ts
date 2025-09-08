@@ -16,6 +16,7 @@ export interface AxiosRequestConfig {
   timeout?: number
   transformRequest?: AxiosTransformer | AxiosTransformer[]
   transformResponse?: AxiosTransformer | AxiosTransformer[]
+  CancelToken?: CancelToken
 
   [propName: string]: any
 }
@@ -77,6 +78,10 @@ export interface AxiosStatic extends AxiosInstance {
 
 export interface AxiosStatic extends AxiosInstance {
   create(config?: AxiosRequestConfig): AxiosInstance
+
+  CancelToken: CancelTokenStatic
+  Cancel: CancelStatic
+  isCancel: (value: any) => boolean
 }
 
 export interface AxiosInterceptorManager<T> {
@@ -97,4 +102,47 @@ export interface RejectedFn {
 
 export interface AxiosTransformer {
 	(data: any, headers?: any): any
+}
+
+export interface CancelToken {
+  promise: Promise<Cancel>
+  reason?: Cancel
+
+  throwIfRequested(): void
+}
+
+export interface Canceler {
+  (message?: string): void
+}
+
+export interface CancelExecutor {
+  (cancel: Canceler): void
+}
+
+// 定义 CancelTokenSource 接口，表示一个取消源
+// 其中包含一个 CancelToken 和一个 Canceler
+export interface CancelTokenSource {
+  // 一个 CancelToken 对象
+  token: CancelToken
+
+  // 一个 Canceler 函数，允许调用者取消操作
+  cancel: Canceler
+}
+
+// 定义 CancelTokenStatic 接口，表示 CancelToken 类的构造函数
+// 该构造函数接受一个 CancelExecutor 类型的参数并返回一个 CancelToken 对象
+export interface CancelTokenStatic {
+  // 创建一个新的 CancelToken 实例
+  new(executor: CancelExecutor): CancelToken
+
+  // 创建一个 CancelTokenSource 实例，返回一个对象包含 token 和 cancel
+  source(): CancelTokenSource
+}
+
+export interface Cancel {
+  message?: string
+}
+
+export interface CancelStatic {
+  new(message?: string): Cancel
 }
