@@ -28,46 +28,46 @@ export function buildURL(
 		return url;
 	}
 
-  let serializedParams
+	let serializedParams;
 
-  if (paramsSerializer) {
-    serializedParams = paramsSerializer(params)
-  } else if(isURLSearchParams(params)) {
-    serializedParams = params.toString()
-  } else {
-    const parts: string[] = []; // 用于存储序列化的参数
+	if (paramsSerializer) {
+		serializedParams = paramsSerializer(params);
+	} else if (isURLSearchParams(params)) {
+		serializedParams = params.toString();
+	} else {
+		const parts: string[] = []; // 用于存储序列化的参数
 
-    // 遍历参数对象的每个键
-    Object.keys(params).forEach((key) => {
-      const val = params[key]; // 获取当前键的值
-      // 跳过 null 和 undefined 的值
-      if (val === null || typeof val === 'undefined') return;
+		// 遍历参数对象的每个键
+		Object.keys(params).forEach((key) => {
+			const val = params[key]; // 获取当前键的值
+			// 跳过 null 和 undefined 的值
+			if (val === null || typeof val === 'undefined') return;
 
-      let values = []; // 用于存储当前键的值
-      if (Array.isArray(val)) {
-        // 如果值是数组，追加 [] 到键名
-        values = val;
-        key += '[]';
-      } else {
-        values = [val]; // 否则将值包装成数组
-      }
+			let values = []; // 用于存储当前键的值
+			if (Array.isArray(val)) {
+				// 如果值是数组，追加 [] 到键名
+				values = val;
+				key += '[]';
+			} else {
+				values = [val]; // 否则将值包装成数组
+			}
 
-      // 对每个值进行编码并添加到参数部分
-      values.forEach((val) => {
-        if (isDate(val)) {
-          // 如果值是日期，转换为 ISO 字符串
-          val = val.toISOString();
-        } else if (isPlainObject(val)) {
-          // 如果值是对象，转换为 JSON 字符串
-          val = JSON.stringify(val);
-        }
-        // 将编码后的键值对添加到 parts 数组
-        parts.push(`${encode(key)}=${encode(val)}`);
-      });
-    });
-    // 将参数部分连接成查询字符串
-    serializedParams = parts.join('&')
-  }
+			// 对每个值进行编码并添加到参数部分
+			values.forEach((val) => {
+				if (isDate(val)) {
+					// 如果值是日期，转换为 ISO 字符串
+					val = val.toISOString();
+				} else if (isPlainObject(val)) {
+					// 如果值是对象，转换为 JSON 字符串
+					val = JSON.stringify(val);
+				}
+				// 将编码后的键值对添加到 parts 数组
+				parts.push(`${encode(key)}=${encode(val)}`);
+			});
+		});
+		// 将参数部分连接成查询字符串
+		serializedParams = parts.join('&');
+	}
 
 	if (serializedParams) {
 		// 查找 URL 中的哈希标记
@@ -81,6 +81,16 @@ export function buildURL(
 	}
 
 	return url; // 返回最终的 URL
+}
+
+export function isAbsoluteURL(url: string): boolean {
+	return /(^[a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+}
+
+export function combineURL(baseURL: string, relativeURL?: string): string {
+	return relativeURL
+		? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+		: baseURL;
 }
 
 // 判断是否是同域
