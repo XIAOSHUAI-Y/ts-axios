@@ -19,7 +19,8 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 			xsrfCookieName,
 			xsrfHeaderName,
 			onDownloadProgress,
-			onUploadProgress
+			onUploadProgress, 
+			auth,
 		} = config;
 
 		// 创建request实例
@@ -116,6 +117,10 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 				if (xsrfValue && xsrfHeaderName) {
 					headers[xsrfHeaderName] = xsrfValue
 				}
+			}
+
+			if(auth) {
+				headers['Authorization'] = 'Basic ' + btoa(auth.username + ':' + auth.password)
 			}
 	
 			// 遍历请求头对象并设置请求头
