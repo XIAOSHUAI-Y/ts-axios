@@ -29,3 +29,25 @@ export function extend<T, U>(to: T, from: U): T & U {
   // 返回合并后的目标对象，目标对象的类型为 T & U，即包含了源对象和目标对象的所有属性
   return to as T & U
 }
+
+export function deepMerge(...objs: any[]): any {
+  const result = Object.create(null)
+
+  objs.forEach(obj => {
+    if (obj) {
+      Object.keys(obj).forEach(key => {
+        const val = obj[key]
+        if (isPlainObject(val)) {
+          if (isPlainObject(result[key])) {
+            result[key] = deepMerge(result[key], val)
+          } else {
+            result[key] = deepMerge(val)
+          }
+        } else {
+          result[key] = val
+        }
+      })
+    }
+  })
+  return result
+}
