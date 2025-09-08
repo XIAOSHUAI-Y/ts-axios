@@ -1,10 +1,10 @@
 import Axios from "./core/Axios";
+import mergeConfig from "./core/mergeConfig";
 import defaults from "./defaults";
 import { extend } from "./helpers/util";
-import { AxiosInstance, AxiosRequestConfig } from "./types";
+import { AxiosRequestConfig, AxiosStatic } from "./types";
 
-// 创建一个 Axios 实例的工厂函数
-function createInstance(config: AxiosRequestConfig): AxiosInstance {
+function createInstance(config: AxiosRequestConfig): AxiosStatic {
   // 创建一个新的 Axios 实例
   const context = new Axios(config)
   // 将 Axios 类的 request 方法与当前的 context（即 Axios 实例）绑定
@@ -16,10 +16,14 @@ function createInstance(config: AxiosRequestConfig): AxiosInstance {
   extend(instance, context)
 
   // 返回扩展后的 instance，确保它是 AxiosInstance 类型
-  return instance as AxiosInstance
+  return instance as AxiosStatic
 }
 
 // 创建一个全局的 axios 实例
 const axios = createInstance(defaults)
+
+axios.create = function create(config) {
+  return createInstance(mergeConfig(defaults, config))
+}
 
 export default axios;
