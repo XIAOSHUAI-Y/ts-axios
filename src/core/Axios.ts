@@ -1,7 +1,8 @@
 import { AxiosResponse, Method, RejectedFn, ResolvedFn } from './../types/index';
 import { AxiosPromise, AxiosRequestConfig } from "../types";
-import dispatchRequest from "./dispatchRequest";
+import dispatchRequest, { transformURL } from "./dispatchRequest";
 import InterceptorManager from './interceptorManager';
+import mergeConfig from './mergeConfig';
 
 interface Interceptors {
   request: InterceptorManager<AxiosRequestConfig>
@@ -92,6 +93,11 @@ export default class Axios {
   // PATCH 请求，用于部分更新资源
   patch(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise {
     return this._requestMethodWithData('patch', url, data, config)
+  }
+
+  getUri(config?: AxiosRequestConfig): string {
+    config = mergeConfig(this.defaults, config)
+    return transformURL(config)
   }
 
   // 内部方法，处理没有请求体的数据请求（如 GET、DELETE 等）
