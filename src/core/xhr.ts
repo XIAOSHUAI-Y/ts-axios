@@ -12,6 +12,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 			responseType,
 			timeout,
 			cancelToken,
+			withCredentials,
 		} = config;
 
 		const request = new XMLHttpRequest();
@@ -23,6 +24,10 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
 		if (timeout) {
 			request.timeout = timeout;
+		}
+
+		if (withCredentials) {
+			request.withCredentials = withCredentials
 		}
 
 		// 初始化请求，设置请求方法和 URL，第三个参数为 true 表示异步请求
